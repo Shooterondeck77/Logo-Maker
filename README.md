@@ -26,9 +26,8 @@ WHEN I open the `logo.svg` file in a browser
 THEN I am shown a 300x200 pixel image that matches the criteria I entered
 
 
-
 ## Tests
-The user will not have errors when entering their information
+The user will not have errors when entering their information. Please see the test video here: https://drive.google.com/file/d/1m5sbPMXCUo8TR9UHyR-NVmAPj5fEFMmS/view 
 
 ## Questions
 Reach out to the owner of the repo, Shooterondeck77 at timothytaffur@gmail.com.
