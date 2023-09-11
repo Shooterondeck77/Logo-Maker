@@ -1,72 +1,32 @@
-const fs = require('fs');
-const { prompt } = require('inquirer');
+const { writeFile } = require('fs/promises');
+const inquirer = require('inquirer');
 const { Circle, Square, Triangle } = require('./lib/shapes');
+const Svg = require("./lib/svg")
+const questions = require('./lib/questions')
 
-
-class Svg {
-  constructor() {
-    this.textElement = '';
-    this.shapeElement = '';
-  }
-
-  render() {
-        return `
-          <svg xmlns="http://www.w3.org/2000/svg" width="300" height="200">
-            ${this.textElement}
-            ${this.shapeElement}
-          </svg>
-        `;
-      }
-    
-      setTextElement(text, color) {
-        this.textElement = `<text x="50" y="50" fill="${color}">${text}</text>`;
-      }
-    
-      setShapeElement(shape) {
-        this.shapeElement = shape.render();
-      }
-    }
-    
-    const questions = [
-        {
-            type: 'input',
-            name: 'text',
-            message: 'What are the letter of your logo (1-3 letters)?',
-            default: 'ABC',
-            validate: text => text.length < 4 || 'Three letter or less!!!'
-        },
-        {
-            type: 'input',
-            name: 'textcolor',
-            message: 'what is the color of the text',
-            default: 'black'
-        },
-        {
-            type: 'list',
-            name: 'shape',
-            message: 'what is the shape of the text',
-            choices: ['Circle','Triagle','Square'],
-            default: 'triangle'
-        },
-        {
-            type: 'input',
-            name: 'shapeColor',
-            message: 'what is the shapes color the text',
-            default: 'seagreen'
+const createSvg = () => {
+    inquirer.prompt(questions).then((ans) => {
+        let shape;
+        if (ans.shape === "Circle") {
+            shape = new Circle()
+        } else if (ans.shape === "Square") {
+            shape = new Square()
+        } else if (ans.shape === "Triangle") {
+            shape = new Triangle()
         }
-    
-    ];
-    
-    prompt(questions).then((ans) => {
-      const svg = new Svg();
-      svg.setTextElement(ans.text, ans.textColor);
-    
-      const shape = new Circle(); // or new Square() or new Triangle()
-      svg.setShapeElement(shape);
-    
-      const svgString = svg.render();
+        
+        shape.setColor(ans.shapeColor)
 
-      fs.writeFileSync('logo.svg', svgString, 'utf-8');
-      console.log('Generated logo.svg');
-    
-    });
+        const svg = new Svg();
+        svg.setShapeElement(shape);
+        svg.setTextElement(ans.text, ans.textColor);
+
+        const svgRender = svg.render();
+
+        return writeFile('logo.svg', svgRender);
+    }).then(() => {
+        console.log('Generated logo.svg');
+    })
+}
+
+createSvg()
